@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You're In! | Exceed Marketing Force</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0B1F3A;
+      --blue:   #1A56DB;
+      --accent: #F97316;
+      --light:  #F1F5F9;
+      --white:  #FFFFFF;
+      --text:   #1E293B;
+      --muted:  #64748B;
+      --green:  #22C55E;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 60px;
+      background: rgba(11,31,58,0.97);
+      border-bottom: 2px solid var(--blue);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 44px;
+      width: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .nav-logo-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .nav-logo-text span { color: var(--accent); }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+    }
+
+    .ty-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 56px 48px;
+      max-width: 620px;
+      width: 100%;
+      text-align: center;
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+    }
+    .ty-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--blue), var(--accent));
+    }
+
+    .check-circle {
+      width: 80px;
+      height: 80px;
+      background: rgba(34,197,94,0.12);
+      border: 2px solid var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 28px;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .ty-card h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      color: var(--navy);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+    .ty-card h1 span { color: var(--accent); }
+
+    .ty-card .intro {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #E2E8F0;
+      margin: 0 0 32px;
+    }
+
+    .next-steps-label {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 36px;
+      text-align: left;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-text strong {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+    .step-text span {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .book-btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: var(--accent);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .book-btn:hover { background: #ea6c0e; transform: translateY(-2px); }
+    .book-btn:active { transform: translateY(0); }
+
+    .book-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .urgency {
+      margin-top: 28px;
+      background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 10px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    .urgency .urg-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .urgency p { font-size: 0.82rem; color: #92400E; line-height: 1.5; }
+    .urgency p strong { color: #7C2D12; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: rgba(0,0,0,0.3);
+      text-align: center;
+      padding: 20px 24px;
+      font-size: 0.8rem;
+      color: #64748B;
+    }
+    footer a { color: #64748B; text-decoration: none; }
+    footer a:hover { color: #94A3B8; }
+
+    @media (max-width: 640px) {
+      .ty-card { padding: 40px 24px; }
+      nav { padding: 12px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="https://www.exceedmarketingforce.com" class="nav-logo">
+      <img src="https://vibe.filesafe.space/1779973375790011962/attachments/3e33be37-0e69-4cab-a204-35ee08fee8cf.png" alt="Exceed Marketing Force Logo" />
+      <div class="nav-logo-text">Exceed <span>Marketing Force</span></div>
+    </a>
+  </nav>
+
+  <main>
+    <div class="ty-card">
+
+      <div class="check-circle">✅</div>
+
+      <h1>You're In! Your Free<br /><span>Growth Audit</span> is Confirmed.</h1>
+      <p class="intro">
+        We received your request and we're already reviewing your business details. One of our growth strategists will reach out within 1 business day — but why wait? Lock in your call right now while spots are open.
+      </p>
+
+      <hr class="divider" />
+
+      <p class="next-steps-label">Here's What Happens Next</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <strong>Book Your Call Below</strong>
+            <span>Pick a time that works for you — the calendar is live and spots are limited.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <strong>We Prep Your Custom Audit</strong>
+            <span>Before the call, we research your market, competitors, and current presence so we're ready to deliver real value from minute one.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <strong>Get Your Growth Roadmap</strong>
+            <span>Walk away with a clear, actionable plan to get more leads, automate follow-up, and scale — whether or not we work together.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- YOUR REAL GHL BOOKING LINK -->
+      <a href="https://api.exceedmarketingforce.com/widget/booking/3EkDaExzxvwi1BBk2ODN" class="book-btn" target="_blank">
+        📅 Schedule My Growth Audit Call Now
+      </a>
+      <p class="book-note">🔒 No commitment. No credit card. Just a straight-talk strategy session — 100% free.</p>
+
+      <div class="urgency">
+        <span class="urg-icon">⚡</span>
+        <p><strong>Spots fill fast.</strong> We only accept a limited number of audit calls each week to ensure every client gets our full attention. Grab your spot before it's gone.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 Exceed Marketing Force · Smyrna, TN · Serving Clients Nationwide · <a href="https://www.exceedmarketingforce.com">exceedmarketingforce.com</a></p>
+  </footer>
+
+</body>
+</html>
