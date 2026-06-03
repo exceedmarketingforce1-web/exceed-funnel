@@ -1,0 +1,533 @@
+
+raw
+Optin · HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Growth Audit | Exceed Marketing Force</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --navy:   #0B1F3A;
+      --blue:   #1A56DB;
+      --accent: #F97316;
+      --light:  #F1F5F9;
+      --white:  #FFFFFF;
+      --text:   #1E293B;
+      --muted:  #64748B;
+    }
+ 
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+    }
+ 
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 60px;
+      background: rgba(11,31,58,0.97);
+      border-bottom: 2px solid var(--blue);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 44px;
+      width: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .nav-logo-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .nav-logo-text span { color: var(--accent); }
+ 
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 56px;
+      padding: 72px 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+ 
+    .hero-copy { flex: 1 1 480px; }
+ 
+    .eyebrow {
+      display: inline-block;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+ 
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      line-height: 1.12;
+      margin-bottom: 20px;
+      color: var(--white);
+    }
+    h1 .highlight { color: var(--accent); }
+ 
+    .subheadline {
+      font-size: 1.1rem;
+      color: #CBD5E1;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 520px;
+    }
+ 
+    /* ── BULLETS ── */
+    .benefits {
+      list-style: none;
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .benefits li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 1rem;
+      color: #E2E8F0;
+      line-height: 1.5;
+    }
+    .benefits li .icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(26,86,219,0.25);
+      border: 1px solid rgba(26,86,219,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .benefits li strong { color: var(--white); }
+ 
+    /* ── TRUST BADGES ── */
+    .trust-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #94A3B8;
+    }
+    .badge .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22C55E;
+      flex-shrink: 0;
+    }
+ 
+    /* ── TESTIMONIALS ── */
+    .testimonials {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .testi {
+      background: rgba(255,255,255,0.05);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+    }
+    .testi p {
+      font-size: 0.875rem;
+      color: #CBD5E1;
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+    .testi strong {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      font-style: normal;
+    }
+ 
+    /* ── FORM CARD ── */
+    .form-card {
+      flex: 0 1 420px;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 40px 36px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+    }
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--blue), var(--accent));
+    }
+ 
+    .form-card h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--navy);
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .form-card .form-sub {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+ 
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'Open Sans', sans-serif;
+      color: var(--text);
+      background: var(--light);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,86,219,0.15);
+      background: var(--white);
+    }
+ 
+    .cta-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+    .cta-btn:hover { background: #ea6c0e; transform: translateY(-1px); }
+    .cta-btn:active { transform: translateY(0); }
+ 
+    .form-disclaimer {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+ 
+    /* ── METRICS STRIP ── */
+    .metrics {
+      background: rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 40px 60px;
+    }
+    .metrics-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 32px;
+      text-align: center;
+    }
+    .metric h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 2.4rem;
+      color: var(--accent);
+    }
+    .metric p {
+      font-size: 0.85rem;
+      color: #94A3B8;
+      margin-top: 4px;
+    }
+ 
+    /* ── SERVICES SECTION ── */
+    .services {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 60px;
+    }
+    .section-label {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .section-label span { color: var(--accent); }
+    .section-sub {
+      text-align: center;
+      color: #94A3B8;
+      font-size: 1rem;
+      margin-bottom: 48px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 28px 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: var(--blue); transform: translateY(-4px); }
+    .card .card-icon { font-size: 2rem; margin-bottom: 16px; }
+    .card h4 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .card p { font-size: 0.875rem; color: #94A3B8; line-height: 1.6; }
+ 
+    /* ── FOOTER ── */
+    footer {
+      background: rgba(0,0,0,0.3);
+      text-align: center;
+      padding: 24px 60px;
+      font-size: 0.8rem;
+      color: #64748B;
+    }
+    footer a { color: #64748B; text-decoration: none; }
+    footer a:hover { color: #94A3B8; }
+ 
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      .hero { padding: 48px 24px; gap: 40px; }
+      .metrics { padding: 40px 24px; }
+      .services { padding: 60px 24px; }
+      footer { padding: 20px 24px; }
+      .form-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <!-- NAV -->
+  <nav>
+    <a href="https://www.exceedmarketingforce.com" class="nav-logo">
+      <img src="https://vibe.filesafe.space/1779973375790011962/attachments/3e33be37-0e69-4cab-a204-35ee08fee8cf.png" alt="Exceed Marketing Force Logo" />
+      <div class="nav-logo-text">Exceed <span>Marketing Force</span></div>
+    </a>
+  </nav>
+ 
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">🔥 Limited Spots Available</span>
+      <h1>Stop Leaving Revenue<br />on the Table.<br /><span class="highlight">Start Growing — Fast.</span></h1>
+      <p class="subheadline">
+        Small businesses that partner with Exceed Marketing Force don't just get leads — they get a complete growth engine. From automated follow-ups to high-converting ads, we build the system that works while you focus on what you do best.
+      </p>
+ 
+      <ul class="benefits">
+        <li>
+          <span class="icon">🎯</span>
+          <span><strong>Lead Generation</strong> — Attract high-quality prospects ready to buy with proven funnels and targeting strategies.</span>
+        </li>
+        <li>
+          <span class="icon">⚙️</span>
+          <span><strong>CRM Setup &amp; Management</strong> — Never lose a lead again. We build and manage your pipeline so every opportunity is captured and followed up on automatically.</span>
+        </li>
+        <li>
+          <span class="icon">🤖</span>
+          <span><strong>Marketing Automation</strong> — From missed-call follow-ups to nurture sequences, your business responds instantly — 24/7, without lifting a finger.</span>
+        </li>
+        <li>
+          <span class="icon">📣</span>
+          <span><strong>Paid Advertising</strong> — Results-driven ad campaigns on Google, Facebook, and beyond — every dollar tracked, every click optimized.</span>
+        </li>
+      </ul>
+ 
+      <div class="trust-row">
+        <span class="badge"><span class="dot"></span> No contracts required</span>
+        <span class="badge"><span class="dot"></span> 100% personalized strategy</span>
+        <span class="badge"><span class="dot"></span> Real results, real fast</span>
+      </div>
+ 
+      <!-- REAL TESTIMONIALS FROM SITE -->
+      <div class="testimonials">
+        <div class="testi">
+          <p>"Exceed Marketing Force helped us get our phone ringing with real, high-quality jobs. They know exactly how to target the right customers in our area."</p>
+          <strong>— Joseph Griffis, Owner · Griffis Handyman (Knoxville, TN)</strong>
+        </div>
+        <div class="testi">
+          <p>"Exceed Marketing Force completely transformed my lead generation. As a realtor, having a consistent pipeline of buyers and sellers is crucial, and their team delivered beyond my expectations."</p>
+          <strong>— Michelle Griffin, Realtor · Epique Realty (Knoxville, TN)</strong>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- FORM -->
+    <div class="form-card" id="audit-form">
+      <h2>Claim Your Free<br />Growth Audit Call</h2>
+      <p class="form-sub">Tell us about your business and we'll map out exactly how to scale it — at no cost to you.</p>
+ 
+      <form id="leadForm">
+        <div class="form-group">
+          <label for="firstName">First Name *</label>
+          <input type="text" id="firstName" name="firstName" placeholder="Jane" required />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name *</label>
+          <input type="text" id="lastName" name="lastName" placeholder="Smith" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Business Email *</label>
+          <input type="email" id="email" name="email" placeholder="jane@yourbusiness.com" required />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number *</label>
+          <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" required />
+        </div>
+        <div class="form-group">
+          <label for="business">Business Name</label>
+          <input type="text" id="business" name="business" placeholder="Your Business Name" />
+        </div>
+        <div class="form-group">
+          <label for="goal">How Can We Help You Grow?</label>
+          <select id="goal" name="goal">
+            <option value="" disabled selected>Select your #1 challenge...</option>
+            <option value="leads">Not enough leads</option>
+            <option value="followup">Poor follow-up &amp; lost deals</option>
+            <option value="ads">Ads not converting</option>
+            <option value="automation">No automation in place</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+        <button type="submit" class="cta-btn">🚀 Get Your Free Growth Audit</button>
+        <p class="form-disclaimer">No spam. No pushy sales calls. Just a straight-talk strategy session — 100% free.</p>
+      </form>
+    </div>
+  </section>
+ 
+  <!-- METRICS STRIP -->
+  <div class="metrics">
+    <div class="metrics-inner">
+      <div class="metric"><h3>3x</h3><p>Average lead increase<br />for our clients</p></div>
+      <div class="metric"><h3>48hrs</h3><p>Time to launch your<br />first campaign</p></div>
+      <div class="metric"><h3>100%</h3><p>Custom strategy —<br />no cookie-cutter plans</p></div>
+      <div class="metric"><h3>24/7</h3><p>Automated follow-up<br />working for you</p></div>
+    </div>
+  </div>
+ 
+  <!-- SERVICES SECTION -->
+  <section class="services">
+    <h2 class="section-label">Everything You Need to <span>Dominate Your Market</span></h2>
+    <p class="section-sub">One partner. One system. Unlimited growth potential.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h4>Lead Generation</h4>
+        <p>Strategic funnels, landing pages, and targeting that bring in warm, qualified leads — not tire-kickers.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <h4>CRM Setup</h4>
+        <p>A fully configured pipeline so you track, manage, and close every single lead without letting anything slip through.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <h4>Automation</h4>
+        <p>Missed-call texts, email nurture sequences, appointment reminders — running automatically, around the clock.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📣</div>
+        <h4>Paid Advertising</h4>
+        <p>Google, Facebook &amp; Instagram ads built to convert — with full tracking so you know exactly what's working.</p>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Exceed Marketing Force · Smyrna, TN · Serving Clients Nationwide · <a href="https://www.exceedmarketingforce.com">exceedmarketingforce.com</a></p>
+  </footer>
+ 
+  <script>
+    document.getElementById('leadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+ 
+      // ── TODO: Send to your GHL webhook ──
+       const data = {
+         firstName: document.getElementById('firstName').value,
+         lastName:  document.getElementById('lastName').value,
+         email:     document.getElementById('email').value,
+         phone:     document.getElementById('phone').value,
+         business:  document.getElementById('business').value,
+         goal:      document.getElementById('goal').value,
+       };
+       fetch('https://services.leadconnectorhq.com/hooks/tU8A4imdcigZLTYvcVdN/webhook-trigger/syOTyThKEegkWnX3cHq5' {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(data)
+       });
+ 
+      window.location.href = 'thankyou.html';
+    });
+  </script>
+ 
+</body>
+</html>
