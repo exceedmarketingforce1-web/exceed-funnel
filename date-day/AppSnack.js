@@ -13,7 +13,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
+  PanResponder,
+  Dimensions,
 } from 'react-native';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const CARD_WIDTH = SCREEN_WIDTH - 40;
+const CARD_HEIGHT = SCREEN_HEIGHT * 0.60;
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.28;
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -245,87 +253,237 @@ function TodayStatusScreen() {
   );
 }
 
-// ─── Tab 2: Discover ──────────────────────────────────────────────────────────
+// ─── Tab 2: Discover (Swipe Cards) ───────────────────────────────────────────
+
+function SwipeCardInner({ user }) {
+  const a = activityMeta(user.activity);
+  return (
+    <>
+      {/* Photo area */}
+      <View style={[dc.photoArea, { backgroundColor: user.avatarColor }]}>
+        <Text style={dc.photoInitials}>{user.initials}</Text>
+        <View style={[dc.activityTag, { backgroundColor: a.bg }]}>
+          <Text style={dc.activityTagEmoji}>{a.emoji}</Text>
+          <Text style={[dc.activityTagLabel, { color: a.color }]}>{a.label}</Text>
+        </View>
+        <View style={dc.onlinePill}>
+          <View style={dc.onlineDotSmall} />
+          <Text style={dc.onlinePillText}>Free Today</Text>
+        </View>
+      </View>
+      {/* Info area */}
+      <View style={dc.infoArea}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={dc.infoName}>{user.name}, {user.age}</Text>
+          <Text style={dc.infoTime}>{user.minutesAgo}m ago</Text>
+        </View>
+        <Text style={dc.infoLocation}>📍 {user.neighborhood}</Text>
+        <Text style={dc.infoBio} numberOfLines={2}>{user.bio}</Text>
+      </View>
+    </>
+  );
+}
 
 function DiscoverScreen({ navigation }) {
-  const [invitedIds, setInvitedIds] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [invitedIds, setInvitedIds]     = useState([]);
+  const [lastSwipe, setLastSwipe]       = useState(null); // 'right' | 'left' | null
 
-  const handleInvite = (user) => {
-    if (invitedIds.includes(user.id)) return;
-    setInvitedIds(p => [...p, user.id]);
-    Alert.alert(
-      'Invite Sent! 🎉',
-      `You invited ${user.name} for ${activityMeta(user.activity).label}. You'll be connected once they accept.`,
-      [
-        { text: "Open Chats", onPress: () => navigation.navigate('Chats') },
-        { text: 'Keep Browsing', style: 'cancel' },
-      ]
-    );
+  const position      = useRef(new Animated.ValueXY()).current;
+  const currentIdxRef = useRef(0);
+
+  // Keep ref in sync so panResponder closure always has latest index
+  useEffect(() => { currentIdxRef.current = currentIndex; }, [currentIndex]);
+
+  // Derived animated values
+  const rotate = position.x.interpolate({
+    inputRange: [-SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2],
+    outputRange: ['-12deg', '0deg', '12deg'],
+    extrapolate: 'clamp',
+  });
+  const inviteOpacity = position.x.interpolate({
+    inputRange: [0, SWIPE_THRESHOLD],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+  const skipOpacity = position.x.interpolate({
+    inputRange: [-SWIPE_THRESHOLD, 0],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+  // Second card scales up as top card moves away
+  const secondCardScale = position.x.interpolate({
+    inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+    outputRange: [1, 0.93, 1],
+    extrapolate: 'clamp',
+  });
+
+  // Stable ref to avoid stale closure in panResponder
+  const actionRef = useRef(null);
+  actionRef.current = (direction) => {
+    const user = MOCK_USERS[currentIdxRef.current];
+    if (!user) return;
+    Animated.timing(position, {
+      toValue: { x: direction * SCREEN_WIDTH * 1.5, y: direction * 60 },
+      duration: 280,
+      useNativeDriver: true,
+    }).start(() => {
+      if (direction > 0) {
+        setInvitedIds(p => [...p, user.id]);
+        setLastSwipe('right');
+        Alert.alert(
+          'Invite Sent! 🎉',
+          `You invited ${user.name} for ${activityMeta(user.activity).label}. Check Active Chats once they accept!`,
+          [
+            { text: 'Open Chats', onPress: () => navigation.navigate('Chats') },
+            { text: 'Keep Swiping', style: 'cancel' },
+          ]
+        );
+      } else {
+        setLastSwipe('left');
+      }
+      setCurrentIndex(p => p + 1);
+      position.setValue({ x: 0, y: 0 });
+    });
   };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, g) => {
+        position.setValue({ x: g.dx, y: g.dy * 0.25 });
+      },
+      onPanResponderRelease: (_, g) => {
+        if (g.dx > SWIPE_THRESHOLD)       actionRef.current(1);
+        else if (g.dx < -SWIPE_THRESHOLD) actionRef.current(-1);
+        else Animated.spring(position, { toValue: { x: 0, y: 0 }, friction: 5, useNativeDriver: true }).start();
+      },
+    })
+  ).current;
+
+  const remaining   = MOCK_USERS.length - currentIndex;
+  const topUser     = MOCK_USERS[currentIndex];
+  const secondUser  = MOCK_USERS[currentIndex + 1];
+  const thirdUser   = MOCK_USERS[currentIndex + 2];
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
+      {/* Header */}
       <View style={s.header}>
-        <Text style={[T.h1, { color: C.text }]}>Discover</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: C.success }} />
-          <Text style={[T.label, { color: C.success }]}>{MOCK_USERS.length} free today</Text>
+        <View>
+          <Text style={[T.h1, { color: C.text }]}>Discover</Text>
+          {remaining > 0 && (
+            <Text style={[T.small, { color: C.textSecondary }]}>
+              {remaining} {remaining === 1 ? 'person' : 'people'} free nearby
+            </Text>
+          )}
         </View>
-      </View>
-      <FlatList
-        data={MOCK_USERS}
-        keyExtractor={i => i.id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        ListHeaderComponent={
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
-            {['All', '☕ Coffee', '🍸 Happy Hour', '🌮 Bites'].map((f, i) => (
-              <TouchableOpacity key={f} style={[s.chip, i === 0 && s.chipActive]}>
-                <Text style={[T.label, { color: i === 0 ? C.white : C.textSecondary }]}>{f}</Text>
-              </TouchableOpacity>
+        {remaining > 0 && (
+          <View style={dc.progressPills}>
+            {MOCK_USERS.map((_, i) => (
+              <View
+                key={i}
+                style={[
+                  dc.progressDot,
+                  i < currentIndex
+                    ? { backgroundColor: C.border }
+                    : i === currentIndex
+                    ? { backgroundColor: C.primary, width: 20 }
+                    : { backgroundColor: C.border },
+                ]}
+              />
             ))}
-          </ScrollView>
-        }
-        renderItem={({ item }) => {
-          const a = activityMeta(item.activity);
-          const invited = invitedIds.includes(item.id);
-          return (
-            <View style={s.card}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                <View style={[s.avatar, { backgroundColor: item.avatarColor }]}>
-                  <Text style={s.avatarText}>{item.initials}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                    <Text style={[T.h4, { color: C.text }]}>{item.name}, {item.age}</Text>
-                    <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: C.success }} />
-                  </View>
-                  <Text style={[T.small, { color: C.textSecondary }]}>📍 {item.neighborhood} · {item.minutesAgo}m ago</Text>
-                </View>
-                <View style={[s.activityBubble, { backgroundColor: a.bg }]}>
-                  <Text style={{ fontSize: 20 }}>{a.emoji}</Text>
-                </View>
+          </View>
+        )}
+      </View>
+
+      {/* Card Stack */}
+      <View style={dc.stackContainer}>
+        {!topUser ? (
+          // Empty state
+          <View style={dc.emptyCard}>
+            <Text style={{ fontSize: 56, marginBottom: 16 }}>🎉</Text>
+            <Text style={[T.h3, { color: C.text, marginBottom: 8, textAlign: 'center' }]}>
+              You've seen everyone!
+            </Text>
+            <Text style={[T.body, { color: C.textSecondary, textAlign: 'center', lineHeight: 22 }]}>
+              Check back later — more people go free throughout the day.
+            </Text>
+            <TouchableOpacity
+              style={[s.inviteBtn, { marginTop: 24 }]}
+              onPress={() => { setCurrentIndex(0); setInvitedIds([]); position.setValue({ x: 0, y: 0 }); }}
+            >
+              <Text style={[T.button, { color: C.white }]}>Start Over</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            {/* Third card (back) */}
+            {thirdUser && (
+              <View style={[dc.card, dc.cardBack]}>
+                <SwipeCardInner user={thirdUser} />
               </View>
-              <Text style={[T.small, { color: C.textSecondary, lineHeight: 20, marginBottom: 14 }]}>{item.bio}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <View style={[s.pill, { backgroundColor: a.bg }]}>
-                  <Text style={[T.caption, { color: a.color, fontWeight: '600' }]}>{a.emoji} {a.label}</Text>
-                </View>
-                <TouchableOpacity
-                  style={[s.inviteBtn, invited && { backgroundColor: C.border }]}
-                  onPress={() => handleInvite(item)}
-                  disabled={invited}
-                  activeOpacity={0.85}
-                >
-                  <Text style={[T.button, { color: invited ? C.textSecondary : C.white }]}>
-                    {invited ? 'Invited ✓' : 'Send Invite'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        }}
-      />
+            )}
+            {/* Second card (mid) */}
+            {secondUser && (
+              <Animated.View style={[dc.card, dc.cardMid, { transform: [{ scale: secondCardScale }] }]}>
+                <SwipeCardInner user={secondUser} />
+              </Animated.View>
+            )}
+            {/* Top card (front, draggable) */}
+            <Animated.View
+              style={[
+                dc.card,
+                dc.cardFront,
+                { transform: [...position.getTranslateTransform(), { rotate }] },
+              ]}
+              {...panResponder.panHandlers}
+            >
+              {/* INVITE badge */}
+              <Animated.View style={[dc.swipeBadge, dc.inviteBadge, { opacity: inviteOpacity }]}>
+                <Text style={dc.inviteBadgeText}>INVITE</Text>
+                <Text style={{ fontSize: 20 }}>✓</Text>
+              </Animated.View>
+              {/* SKIP badge */}
+              <Animated.View style={[dc.swipeBadge, dc.skipBadge, { opacity: skipOpacity }]}>
+                <Text style={{ fontSize: 20 }}>✗</Text>
+                <Text style={dc.skipBadgeText}>SKIP</Text>
+              </Animated.View>
+
+              <SwipeCardInner user={topUser} />
+            </Animated.View>
+          </>
+        )}
+      </View>
+
+      {/* Action Buttons */}
+      {topUser && (
+        <View style={dc.actionRow}>
+          <TouchableOpacity
+            style={dc.skipActionBtn}
+            onPress={() => actionRef.current(-1)}
+            activeOpacity={0.8}
+          >
+            <Text style={dc.skipActionIcon}>✕</Text>
+            <Text style={dc.skipActionLabel}>Skip</Text>
+          </TouchableOpacity>
+
+          <View style={dc.centerHint}>
+            <Text style={[T.caption, { color: C.textMuted, textAlign: 'center' }]}>
+              swipe or tap
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={dc.inviteActionBtn}
+            onPress={() => actionRef.current(1)}
+            activeOpacity={0.8}
+          >
+            <Text style={dc.inviteActionIcon}>♥</Text>
+            <Text style={dc.inviteActionLabel}>Invite</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -682,4 +840,174 @@ const s = StyleSheet.create({
   inputBar:     { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 14, paddingVertical: 10, backgroundColor: C.surface, borderTopWidth: 1, borderTopColor: C.border, gap: 10 },
   chatInput:    { flex: 1, backgroundColor: C.background, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: C.text, maxHeight: 100, borderWidth: 1, borderColor: C.border },
   sendBtn:      { width: 42, height: 42, borderRadius: 21, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center' },
+});
+
+// ─── Discover Card Styles ─────────────────────────────────────────────────────
+
+const dc = StyleSheet.create({
+  // Card stack container
+  stackContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+
+  // Base card
+  card: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: C.surface,
+    position: 'absolute',
+    shadowColor: C.black,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  cardFront: { zIndex: 30 },
+  cardMid:   { zIndex: 20, top: 10 },
+  cardBack:  { zIndex: 10, top: 20, transform: [{ scale: 0.88 }], opacity: 0.6 },
+
+  // Photo section (top ~62% of card)
+  photoArea: {
+    height: CARD_HEIGHT * 0.62,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  photoInitials: {
+    fontSize: 80,
+    fontWeight: '800',
+    color: 'rgba(0,0,0,0.25)',
+  },
+  activityTag: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  activityTagEmoji: { fontSize: 16 },
+  activityTagLabel: { fontSize: 13, fontWeight: '700' },
+  onlinePill: {
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  onlineDotSmall: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#4ADE80' },
+  onlinePillText: { fontSize: 12, color: C.white, fontWeight: '600' },
+
+  // Info section (bottom ~38%)
+  infoArea: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: C.surface,
+  },
+  infoName: { fontSize: 24, fontWeight: '700', color: C.text, marginBottom: 4 },
+  infoLocation: { fontSize: 14, color: C.textSecondary, marginBottom: 8 },
+  infoTime: { fontSize: 12, color: C.textMuted },
+  infoBio: { fontSize: 14, color: C.textSecondary, lineHeight: 20 },
+
+  // Swipe feedback badges
+  swipeBadge: {
+    position: 'absolute',
+    top: 40,
+    zIndex: 99,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 3,
+  },
+  inviteBadge: {
+    left: 20,
+    backgroundColor: 'rgba(34,197,94,0.15)',
+    borderColor: C.success,
+    transform: [{ rotate: '-15deg' }],
+  },
+  inviteBadgeText: { fontSize: 18, fontWeight: '800', color: C.success },
+  skipBadge: {
+    right: 20,
+    backgroundColor: 'rgba(239,68,68,0.15)',
+    borderColor: C.danger,
+    transform: [{ rotate: '15deg' }],
+  },
+  skipBadgeText: { fontSize: 18, fontWeight: '800', color: C.danger },
+
+  // Bottom action buttons
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+    paddingVertical: 16,
+    gap: 20,
+  },
+  skipActionBtn: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: C.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: C.danger,
+    shadowColor: C.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  skipActionIcon:  { fontSize: 22, color: C.danger },
+  skipActionLabel: { fontSize: 10, color: C.danger, fontWeight: '600', marginTop: 2 },
+  centerHint: { flex: 1, alignItems: 'center' },
+  inviteActionBtn: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: C.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: C.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  inviteActionIcon:  { fontSize: 26, color: C.white },
+  inviteActionLabel: { fontSize: 10, color: C.white, fontWeight: '600', marginTop: 2 },
+
+  // Progress dots
+  progressPills: { flexDirection: 'row', gap: 4, alignItems: 'center' },
+  progressDot: { width: 8, height: 8, borderRadius: 4 },
+
+  // Empty state
+  emptyCard: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: 24,
+    backgroundColor: C.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
 });
